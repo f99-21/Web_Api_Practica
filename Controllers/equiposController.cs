@@ -294,6 +294,44 @@ namespace Web_Api_Practica.Controllers
             }
             return Ok(ListadoEquipo);
 
+     
+        
+        }
+
+
+        [HttpGet]
+        [Route("Ordenar")]
+
+        public ActionResult Ordenar()
+        {
+            var ListadoEquipo = (from e in _equiposContexto.equipos
+                                 join t in _equiposContexto.tipo_equipo
+                                 on e.tipo_equipo_id equals t.id_tipo_equipo
+                                 join m in _equiposContexto.marcas
+                                 on e.marca_id equals m.id_marcas
+                                 join es in _equiposContexto.estados_equipo
+                                 on e.estado_equipo_id equals es.id_estados_equipo
+                                 select new
+                                 {
+                                     e.id_equipos,
+                                     e.nombre,
+                                     e.descripcion,
+                                     e.tipo_equipo_id,
+                                     tipo_equipo = t.descripcion,
+                                     e.marca_id,
+                                     marcas = m.nombre_marca,
+                                     e.estado_equipo_id,
+                                     estados_equipo = es.descripcion,
+                                     detalle = $"Tipo : {t.descripcion}, Marca{m.nombre_marca},EstDO Equipo {es.descripcion}",
+                                     e.estado
+                                 }).OrderBy(resultado => resultado.estado_equipo_id).ToList();
+
+            if (ListadoEquipo.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(ListadoEquipo);
+
         }
     }
     
